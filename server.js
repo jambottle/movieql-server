@@ -1,5 +1,18 @@
 import { ApolloServer, gql } from 'apollo-server';
 
+let users = [
+  {
+    id: '1',
+    firstName: 'Justin',
+    lastName: 'Bieber',
+  },
+  {
+    id: '2',
+    firstName: 'Katy',
+    lastName: 'Perry',
+  },
+];
+
 let tweets = [
   {
     id: '1',
@@ -14,9 +27,9 @@ let tweets = [
 const typeDefs = gql`
   type User {
     id: ID!
-    username: String!
-    firstName: String
-    lastName: String
+    firstName: String!
+    lastName: String!
+    fullName: String!
   }
 
   type Tweet {
@@ -26,6 +39,7 @@ const typeDefs = gql`
   }
 
   type Query {
+    allUsers: [User!]!
     allTweets: [Tweet!]!
     tweet(tweetId: ID!): Tweet
   }
@@ -37,7 +51,15 @@ const typeDefs = gql`
 `;
 
 const resolvers = {
+  User: {
+    fullName({ firstName, lastName }) {
+      return `${firstName} ${lastName}`;
+    },
+  },
   Query: {
+    allUsers() {
+      return users;
+    },
     allTweets() {
       return tweets;
     },
