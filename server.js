@@ -1,4 +1,5 @@
 import { ApolloServer, gql } from 'apollo-server';
+import fetch from 'node-fetch';
 
 let users = [
   {
@@ -40,10 +41,36 @@ const typeDefs = gql`
     author: User
   }
 
+  type Movie {
+    id: Int!
+    url: String!
+    imdb_code: String!
+    title: String!
+    title_english: String!
+    title_long: String!
+    slug: String!
+    year: Int!
+    rating: Float!
+    runtime: Float!
+    genres: [String]!
+    summary: String
+    description_full: String!
+    synopsis: String
+    yt_trailer_code: String!
+    language: String!
+    background_image: String!
+    background_image_original: String!
+    small_cover_image: String!
+    medium_cover_image: String!
+    large_cover_image: String!
+  }
+
   type Query {
     allUsers: [User!]!
     allTweets: [Tweet!]!
     tweet(tweetId: ID!): Tweet
+    allMovies: [Movie!]!
+    movie(movieId: Int!): Movie
   }
 
   type Mutation {
@@ -72,6 +99,18 @@ const resolvers = {
     },
     tweet(root, { tweetId }) {
       return tweets.find(tweet => tweet.id === tweetId);
+    },
+    async allMovies() {
+      const response = await fetch(`https://yts.mx/api/v2/list_movies.json`);
+      const { data } = await response.json();
+      return data.movies;
+    },
+    async movie(root, { movieId }) {
+      const response = await fetch(
+        `https://yts.mx/api/v2/movie_details.json?movie_id=${movieId}`
+      );
+      const { data } = await response.json();
+      return data.movie;
     },
   },
   Mutation: {
