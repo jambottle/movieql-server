@@ -76,14 +76,20 @@ const resolvers = {
   },
   Mutation: {
     createTweet(root, { userId, text }) {
-      const newTweet = {
-        id: tweets.length + 1,
-        text,
-        userId,
-      };
+      const user = users.find(user => user.id === userId);
 
-      tweets.push(newTweet);
-      return newTweet;
+      if (!user) {
+        throw new Error('User ID does not exist.');
+      } else {
+        const newTweet = {
+          id: tweets.length + 1,
+          text,
+          userId,
+        };
+
+        tweets.push(newTweet);
+        return newTweet;
+      }
     },
     deleteTweet(root, { tweetId }) {
       const tweet = tweets.find(tweet => tweet.id === tweetId);
